@@ -1,11 +1,20 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 public class ball : MonoBehaviour
 {
     public Rigidbody2D rigidbody2D;
     public float speed = 6f;
+
+    public UIManager UIManager;
+
+    public int LeftPlayerScore;
+    public int RightPlayerScore;
+
+    public static event Action BallReset;
 
     // Start is called before the first frame update
     void Start()
@@ -16,6 +25,8 @@ public class ball : MonoBehaviour
 
     private void SendBallInrandomDirection()
     {
+        BallReset?.Invoke();
+
         rigidbody2D.velocity = Vector3.zero;
         rigidbody2D.isKinematic = true;
         transform.position = Vector3.zero;
@@ -27,12 +38,14 @@ public class ball : MonoBehaviour
         rigidbody2D.velocity = newBallVector.normalized * speed;
     }
 
+
     // Update is called once per frame
     void Update()
     {
         if (Input.GetKeyUp(KeyCode.Space))
         {
             SendBallInrandomDirection();
+
         }
     }
 
@@ -50,10 +63,15 @@ public class ball : MonoBehaviour
         if(transform.position.x > 0)
         {
             Debug.Log("player left +1");
+            LeftPlayerScore++;
+            UIManager.SetLeftPlayerScoreText(LeftPlayerScore.ToString());
         }
         else
         {
             Debug.Log("player right +1");
+            RightPlayerScore++;
+            UIManager.SetRightPlayerScoreText(RightPlayerScore.ToString());
+
         }
 
         SendBallInrandomDirection();
